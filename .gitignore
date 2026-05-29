@@ -1,0 +1,42 @@
+# Maven
+target/
+*.jar
+*.war
+*.ear
+
+# IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Env / secrets
+.env
+.env.local
+*.pem
+*.key
+
+# Spring Boot
+HELP.md
+!.mvn/wrapper/maven-wrapper.jar
+
+# Docker volumes (managed by compose)
+postgres_data/
