@@ -1,11 +1,12 @@
-# PayFlow — Distributed Payment Processing Backend
+# PayFlow — Distributed Payment Processing System
 
-Java 17 · Spring Boot 3 · PostgreSQL · Redis · Apache Kafka · Docker Compose
+**Backend:** Java 17 · Spring Boot 3 · PostgreSQL · Redis · Apache Kafka · Docker Compose
+**Frontend:** React 18 · TypeScript · Vite · Tailwind CSS
 
-PayFlow is a portfolio-grade backend that demonstrates the engineering primitives a real
-fintech system relies on: ACID money transfers, idempotent requests, optimistic + pessimistic
+PayFlow is a portfolio-grade fintech project that demonstrates the engineering primitives a real
+payment system relies on: ACID money transfers, idempotent requests, optimistic + pessimistic
 locking under concurrency, async event-driven notifications, Redis-based rate limiting,
-and role-based authorization.
+and role-based authorization — wrapped in a clean React UI for live demos.
 
 ---
 
@@ -69,61 +70,88 @@ containers through their exposed ports.
 ## Project layout
 
 ```
-src/main/java/com/payflow
-├── PayflowApplication.java         # entry point
-├── auth/                            # register, login, JWT, security bridge
-│   ├── AuthController.java
-│   ├── AuthService.java             # also auto-creates wallet on register
-│   ├── JwtService.java
-│   ├── JwtAuthFilter.java
-│   ├── CustomUserDetailsService.java
-│   └── dto/
-├── user/                            # User entity + repo + Role enum
-├── wallet/                          # Wallet entity + repo + balance endpoint
-├── transaction/                     # the heart of the system
-│   ├── PaymentController.java
-│   ├── PaymentService.java          # idempotency orchestration
-│   ├── AcidTransferExecutor.java    # @Transactional + @Retryable money move
-│   ├── TransactionController.java
-│   ├── AdminTransactionController.java
-│   ├── TransactionService.java
-│   └── dto/
-├── notification/                    # Kafka consumer
-├── kafka/                           # event records + producer
-├── redis/                           # IdempotencyService, RateLimiterService
-├── gateway/                         # RateLimitFilter
-├── common/                          # ApiError + GlobalExceptionHandler
-└── config/                          # SecurityConfig, RedisConfig, KafkaConfig
+payflow/
+├── docker-compose.yml               # Postgres + Redis + Kafka + Zookeeper
+├── pom.xml                          # Maven build for the backend
+│
+├── src/main/java/com/payflow/       # ─── BACKEND ───
+│   ├── PayflowApplication.java
+│   ├── auth/                        # register, login, JWT, security bridge
+│   ├── user/                        # User entity + repo + Role enum
+│   ├── wallet/                      # Wallet entity + repo + balance endpoint
+│   ├── transaction/                 # heart of the system
+│   │   ├── PaymentService.java          # idempotency orchestration
+│   │   ├── AcidTransferExecutor.java    # @Transactional + @Retryable
+│   │   ├── TransactionService.java
+│   │   └── *Controller.java
+│   ├── notification/                # Kafka consumer
+│   ├── kafka/                       # event records + producer
+│   ├── redis/                       # IdempotencyService, RateLimiterService
+│   ├── gateway/                     # RateLimitFilter
+│   ├── common/                      # ApiError + GlobalExceptionHandler
+│   └── config/                      # SecurityConfig, RedisConfig, KafkaConfig
+│
+└── frontend/                        # ─── FRONTEND ───
+    ├── package.json
+    ├── vite.config.ts               # dev proxy /api -> localhost:8080
+    ├── tailwind.config.js
+    └── src/
+        ├── api/client.ts            # axios + JWT interceptor + typed endpoints
+        ├── context/AuthContext.tsx  # token + role + login/register/logout
+        ├── routes/ProtectedRoute.tsx
+        ├── components/              # Layout, Logo, PageHeader, Spinner, ...
+        ├── pages/                   # Login, Register, Dashboard, Transfer,
+        │                            # History, AdminTransactions, NotFound
+        ├── lib/format.ts            # currency, dates, initials
+        └── types.ts                 # mirrors backend DTOs
 ```
 
 ---
 
-## Quick start
+## Quick start — run the whole stack
 
-### 1. Boot the infrastructure
+You will need three terminals.
 
-```bash
+### Terminal 1 — Infrastructure (Postgres, Redis, Kafka, Zookeeper)
+
+```powershell
 docker compose up -d
 ```
 
-This starts Postgres (5432), Redis (6379), Zookeeper (2181), Kafka (9092).
-Wait ~10s for Kafka to fully come up the first time.
+Wait ~10 seconds the first time for Kafka to finish booting. Check:
 
-### 2. Build and run the Spring Boot app
+```powershell
+docker compose ps
+```
 
-```bash
-./mvnw spring-boot:run
-# or
+All four containers should be `Up` or `healthy`.
+
+### Terminal 2 — Backend API (Spring Boot, port 8080)
+
+```powershell
 mvn spring-boot:run
 ```
 
-App listens on **http://localhost:8080**.
+Wait for `Started PayflowApplication in X.X seconds`. The API is now live on
+**http://localhost:8080**.
 
-### 3. Tear it down
+### Terminal 3 — Frontend (Vite + React, port 5173)
 
-```bash
-docker compose down              # keep volumes
-docker compose down -v           # wipe Postgres data too
+```powershell
+cd frontend
+npm install     # only the first time
+npm run dev
+```
+
+Open **http://localhost:5173** in your browser. The dev server proxies `/api/*` to
+the backend, so CORS is invisible during development.
+
+### Tear it down
+
+```powershell
+# In each terminal: Ctrl+C
+docker compose down              # stop containers, keep DB volume
+docker compose down -v           # stop containers AND wipe Postgres data
 ```
 
 ---
@@ -140,6 +168,24 @@ docker compose down -v           # wipe Postgres data too
 | GET  | `/api/admin/transactions` | bearer + ADMIN | All transactions |
 
 ---
+
+## Frontend tour
+
+| Route | Auth | What it shows |
+| --- | --- | --- |
+| `/login` | public | Email/password sign-in. JWT stored in localStorage. |
+| `/register` | public | Create account; wallet auto-created server-side. |
+| `/dashboard` | bearer | Wallet balance card, recently sent/received totals, last 5 transactions. |
+| `/transfer` | bearer | Send money. Idempotency-Key UUID auto-generated and shown for transparency. |
+| `/history` | bearer | Paginated table with All / Sent / Received filters. |
+| `/admin` | bearer + ADMIN | System-wide transaction view (sidebar entry only renders for admins). |
+
+Design notes:
+
+- Tailwind + Inter font for clean typography.
+- Brand gradient (indigo) only on the balance card and primary CTAs — everything else is neutral slate so the UI reads like a banking dashboard, not a marketing page.
+- All API errors are surfaced via toast notifications; the global error handler on the backend already returns clean JSON, so the frontend just shows `message` or `details`.
+- A `401` from any endpoint clears the token and bounces the user back to `/login` automatically.
 
 ## Sample curl walkthrough
 
@@ -237,6 +283,8 @@ All overridable via environment variables (see `src/main/resources/application.y
 | `REDIS_HOST` / `REDIS_PORT` | localhost / 6379 | Redis connection |
 | `KAFKA_BOOTSTRAP` | localhost:9092 | Kafka brokers |
 | `JWT_SECRET` | dev-only string | HS256 signing key (use 64+ chars in prod) |
+| `payflow.cors.allowed-origins` | `http://localhost:5173,http://localhost:4173` | Comma-separated CORS allow-list (yml property; can also be set via env) |
+| `VITE_API_BASE_URL` (frontend) | empty (uses Vite proxy) | Absolute backend URL for production frontend builds |
 
 ---
 
