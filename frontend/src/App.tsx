@@ -3,6 +3,8 @@ import Layout from './components/Layout';
 import ProtectedRoute from './routes/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import Transfer from './pages/Transfer';
 import History from './pages/History';
@@ -22,6 +24,8 @@ export default function App() {
         path="/register"
         element={token ? <Navigate to="/dashboard" replace /> : <Register />}
       />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       <Route
         element={
