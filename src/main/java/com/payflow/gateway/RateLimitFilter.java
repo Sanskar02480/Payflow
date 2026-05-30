@@ -53,7 +53,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
         String bucket = "payments:" + ud.getUsername();
         if (!rateLimiterService.tryAcquire(bucket)) {
-            response.setStatus(HttpServletResponse.SC_TOO_MANY_REQUESTS);
+            response.setStatus(429); // HTTP 429 Too Many Requests (no SC_ constant in Jakarta)
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             objectMapper.writeValue(response.getOutputStream(), Map.of(
                     "error", "RATE_LIMITED",
