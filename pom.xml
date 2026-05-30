@@ -122,6 +122,9 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <!-- Force UTC so the JDBC driver doesn't ship Windows'
+                         legacy "Asia/Calcutta" tz name that Postgres rejects. -->
+                    <jvmArguments>-Duser.timezone=UTC</jvmArguments>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
