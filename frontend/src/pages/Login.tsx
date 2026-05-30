@@ -15,14 +15,17 @@ export default function Login() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await login(email, password);
-      toast.success('Welcome back!');
+      await login(email, password, rememberMe);
+      toast.success(
+        rememberMe ? 'Welcome back! Session will last 24 hours.' : 'Welcome back!',
+      );
       navigate(from, { replace: true });
     } catch (err) {
       toast.error(extractErrorMessage(err));
@@ -66,9 +69,17 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="label" htmlFor="password">
-                Password
-              </label>
+              <div className="mb-1.5 flex items-center justify-between">
+                <label className="label !mb-0" htmlFor="password">
+                  Password
+                </label>
+                <Link
+                  to="/forgot-password"
+                  className="text-xs font-medium text-brand-700 hover:text-brand-800"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <div className="relative">
                 <Lock
                   size={16}
@@ -87,6 +98,23 @@ export default function Login() {
                 />
               </div>
             </div>
+
+            <label
+              htmlFor="remember"
+              className="flex cursor-pointer select-none items-center gap-2.5 text-sm text-slate-700"
+            >
+              <input
+                id="remember"
+                type="checkbox"
+                className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              <span>
+                Remember me
+                <span className="ml-1 text-xs text-slate-400">(keep me signed in for 24h)</span>
+              </span>
+            </label>
 
             <button type="submit" disabled={submitting} className="btn-primary w-full">
               {submitting ? <Spinner /> : <>Sign in <ArrowRight size={16} /></>}

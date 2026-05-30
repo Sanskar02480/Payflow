@@ -54,7 +54,10 @@ payflow:
   jwt:
     # 64+ char secret for HS256/HS512. Override via env in prod!
     secret: ${JWT_SECRET:change-me-please-this-is-a-dev-only-secret-key-min-64-chars-long-xxxx}
-    expiration-ms: 3600000   # 1 hour
+    expiration-ms: 3600000              # 1 hour  (default session)
+    remember-me-expiration-ms: 86400000 # 24 hours (when "Remember me" is checked)
+  password-reset:
+    token-ttl-minutes: 15
   kafka:
     payment-completed-topic: payment_completed
   rate-limit:

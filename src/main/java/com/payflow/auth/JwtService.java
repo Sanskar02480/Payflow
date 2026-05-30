@@ -21,24 +21,36 @@ import java.util.function.Function;
 public class JwtService {
 
     private final SecretKey signingKey;
-    private final long expirationMs;
+    private final long defaultExpirationMs;
+    private final long rememberMeExpirationMs;
 
     public JwtService(
             @Value("${payflow.jwt.secret}") String secret,
-            @Value("${payflow.jwt.expiration-ms}") long expirationMs
+            @Value("${payflow.jwt.expiration-ms}") long defaultExpirationMs,
+            @Value("${payflow.jwt.remember-me-expiration-ms}") long rememberMeExpirationMs
     ) {
         // HMAC-SHA key needs >= 256 bits. Use the raw secret bytes (long enough per config).
         this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        this.expirationMs = expirationMs;
+        this.defaultExpirationMs = defaultExpirationMs;
+        this.rememberMeExpirationMs = rememberMeExpirationMs;
     }
 
     public String generateToken(Long userId, String email, String role) {
+        return generateToken(userId, email, role, false);
+    }
+
+    /**
+     * @param rememberMe if true, token lives for ~24h instead of ~1h.
+     */
+    public String generateToken(Long userId, String email, String role, boolean rememberMe) {
+        long ttl = rememberMe ? rememberMeExpirationMs : defaultExpirationMs;
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + expirationMs);
+        Date expiry = new Date(now.getTime() + ttl);
         return Jwts.builder()
                 .subject(email)
                 .claim("uid", userId)
                 .claim("role", role)
+                .claim("rememberMe", rememberMe)
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(signingKey)

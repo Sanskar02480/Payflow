@@ -58,8 +58,18 @@ export function extractErrorMessage(err: unknown): string {
 export const authApi = {
   register: (email: string, password: string) =>
     http.post<AuthResponse>('/api/auth/register', { email, password }).then((r) => r.data),
-  login: (email: string, password: string) =>
-    http.post<AuthResponse>('/api/auth/login', { email, password }).then((r) => r.data),
+  login: (email: string, password: string, rememberMe: boolean) =>
+    http
+      .post<AuthResponse>('/api/auth/login', { email, password, rememberMe })
+      .then((r) => r.data),
+  forgotPassword: (email: string) =>
+    http
+      .post<{ message: string }>('/api/auth/forgot-password', { email })
+      .then((r) => r.data),
+  resetPassword: (token: string, newPassword: string) =>
+    http
+      .post<{ message: string }>('/api/auth/reset-password', { token, newPassword })
+      .then((r) => r.data),
 };
 
 export const walletApi = {
