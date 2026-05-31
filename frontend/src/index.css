@@ -5,40 +5,77 @@
 @layer base {
   html {
     font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    /* Inter's stylistic alternates -- gives the 'a' and 'g' a cleaner look */
+    font-feature-settings: 'cv11' 1, 'ss03' 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
   body {
-    @apply bg-slate-50 text-slate-900;
+    @apply bg-white text-slate-900;
   }
   *:focus-visible {
     @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-white;
   }
+  ::selection {
+    @apply bg-brand-100 text-brand-900;
+  }
+  /* Sharper headings */
+  h1, h2, h3 {
+    @apply tracking-tight text-slate-900;
+  }
 }
 
 @layer components {
+  /* ---- Buttons ---- */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-3.5 py-2 text-sm font-medium transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-60;
   }
   .btn-primary {
-    @apply btn bg-brand-600 text-white shadow-sm hover:bg-brand-700 active:scale-[0.98];
+    @apply btn bg-slate-900 text-white shadow-sm hover:bg-slate-800 active:bg-slate-900;
   }
   .btn-secondary {
-    @apply btn border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 active:scale-[0.98];
+    @apply btn border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50;
   }
   .btn-ghost {
-    @apply btn text-slate-600 hover:bg-slate-100;
+    @apply btn text-slate-600 hover:bg-slate-100 hover:text-slate-900;
   }
+  .btn-accent {
+    @apply btn bg-brand-600 text-white shadow-sm hover:bg-brand-700;
+  }
+
+  /* ---- Inputs ---- */
   .input {
-    @apply block w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm placeholder:text-slate-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500;
+    @apply block w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 transition-colors focus:border-slate-900 focus:ring-1 focus:ring-slate-900;
   }
   .label {
-    @apply mb-1.5 block text-sm font-medium text-slate-700;
+    @apply mb-1.5 block text-xs font-medium uppercase tracking-wider text-slate-500;
   }
+
+  /* ---- Cards ---- */
   .card {
-    @apply rounded-2xl border border-slate-200 bg-white shadow-card;
+    @apply rounded-xl border border-slate-200/80 bg-white shadow-card;
   }
+
+  /* ---- Badges ---- */
   .badge {
-    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+    @apply inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium uppercase tracking-wider;
+  }
+}
+
+@layer utilities {
+  /* Tabular numbers for money/data alignment */
+  .tnum {
+    font-feature-settings: 'tnum' 1, 'cv11' 1;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Hides the spinner on number inputs (cleaner amount field) */
+  .no-spin::-webkit-outer-spin-button,
+  .no-spin::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .no-spin {
+    -moz-appearance: textfield;
   }
 }

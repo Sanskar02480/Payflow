@@ -34,12 +34,12 @@ export default function AdminTransactions() {
   return (
     <>
       <PageHeader
-        title="Admin · All Transactions"
+        title="All transactions"
         subtitle="System-wide view across every wallet."
         action={
-          <span className="badge bg-brand-50 text-brand-700">
-            <ShieldCheck size={14} />
-            ADMIN
+          <span className="inline-flex items-center gap-1.5 rounded-md bg-slate-900 px-2 py-1 text-[11px] font-medium uppercase tracking-wider text-white">
+            <ShieldCheck size={12} strokeWidth={2.25} />
+            Admin
           </span>
         }
       />
@@ -47,7 +47,7 @@ export default function AdminTransactions() {
       <div className="card overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Spinner size={24} className="text-brand-600" />
+            <Spinner size={20} className="text-slate-400" />
           </div>
         ) : !data || data.content.length === 0 ? (
           <EmptyState icon={Receipt} title="No transactions in the system yet" />
@@ -55,45 +55,45 @@ export default function AdminTransactions() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  <th className="px-6 py-3">ID</th>
-                  <th className="px-6 py-3">Sender</th>
-                  <th className="px-6 py-3">Recipient</th>
-                  <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3">Date</th>
-                  <th className="px-6 py-3 text-right">Amount</th>
+                <tr className="border-b border-slate-100 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+                  <th className="px-6 py-3 font-semibold">ID</th>
+                  <th className="px-6 py-3 font-semibold">Sender</th>
+                  <th className="px-6 py-3 font-semibold">Recipient</th>
+                  <th className="px-6 py-3 font-semibold">Status</th>
+                  <th className="px-6 py-3 font-semibold">Date</th>
+                  <th className="px-6 py-3 text-right font-semibold">Amount</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {data.content.map((t) => (
-                  <tr key={t.id} className="text-sm hover:bg-slate-50">
-                    <td className="px-6 py-4 font-mono text-xs text-slate-500">#{t.id}</td>
+                  <tr key={t.id} className="text-sm transition-colors hover:bg-slate-50/60">
+                    <td className="px-6 py-4 font-mono text-[11px] text-slate-400">#{t.id}</td>
                     <td className="px-6 py-4 font-medium text-slate-700">{t.senderEmail}</td>
                     <td className="px-6 py-4 font-medium text-slate-700">{t.recipientEmail}</td>
                     <td className="px-6 py-4">
                       <span
                         className={`badge ${
                           t.status === 'COMPLETED'
-                            ? 'bg-emerald-50 text-emerald-700'
+                            ? 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/10'
                             : t.status === 'PENDING'
-                            ? 'bg-amber-50 text-amber-700'
+                            ? 'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/10'
                             : t.status === 'REVERSED'
-                            ? 'bg-slate-100 text-slate-600'
+                            ? 'bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-600/10'
                             : t.status === 'REFUND'
-                            ? 'bg-indigo-50 text-indigo-700'
-                            : 'bg-rose-50 text-rose-700'
+                            ? 'bg-slate-900 text-white'
+                            : 'bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-600/10'
                         }`}
                       >
                         {t.status}
                       </span>
                       {t.refundOfTransactionId && (
-                        <p className="mt-1 text-xs text-slate-500">
+                        <p className="mt-1 text-[11px] uppercase tracking-wider text-slate-400">
                           refund of #{t.refundOfTransactionId}
                         </p>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-slate-500">{formatDate(t.createdAt)}</td>
-                    <td className="px-6 py-4 text-right font-bold text-slate-900">
+                    <td className="px-6 py-4 text-xs text-slate-500">{formatDate(t.createdAt)}</td>
+                    <td className="tnum px-6 py-4 text-right font-semibold text-slate-900">
                       {formatCurrency(t.amount)}
                     </td>
                   </tr>
@@ -110,11 +110,11 @@ export default function AdminTransactions() {
               disabled={data.first}
               className="btn-secondary"
             >
-              <ChevronLeft size={16} />
+              <ChevronLeft size={14} />
               Previous
             </button>
-            <span className="text-sm text-slate-500">
-              Page {data.number + 1} / {data.totalPages}
+            <span className="text-xs text-slate-500">
+              Page {data.number + 1} of {data.totalPages}
             </span>
             <button
               onClick={() => setPage((p) => p + 1)}
@@ -122,7 +122,7 @@ export default function AdminTransactions() {
               className="btn-secondary"
             >
               Next
-              <ChevronRight size={16} />
+              <ChevronRight size={14} />
             </button>
           </div>
         )}

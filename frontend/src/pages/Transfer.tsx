@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Send, ShieldCheck, RefreshCw, AtSign, IndianRupee, ArrowRight } from 'lucide-react';
+import { Send, RefreshCw, AtSign, ArrowRight, ShieldCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { paymentApi, walletApi, extractErrorMessage } from '../api/client';
 import { formatCurrency } from '../lib/format';
@@ -13,7 +13,6 @@ function newIdempotencyKey(): string {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
     return crypto.randomUUID();
   }
-  // Fallback for very old browsers.
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
     const v = c === 'x' ? r : (r & 0x3) | 0x8;
@@ -67,29 +66,41 @@ export default function Transfer() {
 
   return (
     <>
-      <PageHeader title="Send Money" subtitle="Transfer to another PayFlow user instantly." />
+      <PageHeader title="Send money" subtitle="Transfer to another PayFlow user." />
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-5 lg:grid-cols-3">
         <div className="card p-6 lg:col-span-2">
-          <div className="mb-5 rounded-lg border border-slate-100 bg-slate-50/50 p-4">
-            <DailyLimitBar compact />
+          {/* Current-balance + daily-limit strip */}
+          <div className="mb-6 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border border-slate-100 bg-slate-50/60 px-4 py-3">
+              <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
+                Available balance
+              </p>
+              <p className="tnum mt-1 text-lg font-semibold tracking-tight text-slate-900">
+                {wallet ? formatCurrency(wallet.balance) : '—'}
+              </p>
+            </div>
+            <div className="rounded-lg border border-slate-100 bg-slate-50/60 px-4 py-3">
+              <DailyLimitBar compact />
+            </div>
           </div>
-          <form onSubmit={onSubmit} className="space-y-5">
+
+          <form onSubmit={onSubmit} className="space-y-4">
             <div>
               <label className="label" htmlFor="recipient">
-                Recipient email
+                Recipient
               </label>
               <div className="relative">
                 <AtSign
-                  size={16}
+                  size={14}
                   className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
                 />
                 <input
                   id="recipient"
                   type="email"
                   required
-                  className="input pl-10"
-                  placeholder="bob@payflow.dev"
+                  className="input pl-9"
+                  placeholder="email@payflow.dev"
                   value={recipient}
                   onChange={(e) => setRecipient(e.target.value)}
                 />
@@ -98,60 +109,53 @@ export default function Transfer() {
 
             <div>
               <label className="label" htmlFor="amount">
-                Amount (INR)
+                Amount
               </label>
               <div className="relative">
-                <IndianRupee
-                  size={16}
-                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                />
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-slate-400">
+                  ₹
+                </span>
                 <input
                   id="amount"
                   type="number"
                   required
                   min="0.01"
                   step="0.01"
-                  className="input pl-10"
+                  className="input no-spin tnum pl-7 text-base"
                   placeholder="0.00"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                 />
               </div>
-              {wallet && (
-                <p className="mt-1.5 text-xs text-slate-500">
-                  Available: {formatCurrency(wallet.balance)}
-                </p>
-              )}
             </div>
 
             <div>
               <label className="label" htmlFor="idem">
-                Idempotency key{' '}
-                <span className="font-normal text-slate-400">(auto-generated)</span>
+                Idempotency key
               </label>
               <div className="flex gap-2">
                 <input
                   id="idem"
                   readOnly
-                  className="input flex-1 cursor-not-allowed bg-slate-50 font-mono text-xs"
+                  className="input flex-1 cursor-not-allowed bg-slate-50/70 font-mono text-[11px] text-slate-600"
                   value={idempotencyKey}
                 />
                 <button
                   type="button"
                   onClick={() => setIdempotencyKey(newIdempotencyKey())}
-                  className="btn-secondary px-3"
+                  className="btn-secondary px-2.5"
                   aria-label="Regenerate idempotency key"
                   title="Regenerate"
                 >
-                  <RefreshCw size={16} />
+                  <RefreshCw size={14} />
                 </button>
               </div>
-              <p className="mt-1.5 text-xs text-slate-500">
-                Submitting twice with the same key returns the same response — no double charges.
+              <p className="mt-1.5 text-[11px] text-slate-500">
+                Submitting twice with the same key returns the same response — no double charge.
               </p>
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-2">
+            <div className="flex items-center justify-end gap-2 pt-3">
               <button
                 type="button"
                 onClick={() => navigate(-1)}
@@ -160,14 +164,14 @@ export default function Transfer() {
               >
                 Cancel
               </button>
-              <button type="submit" disabled={submitting} className="btn-primary min-w-[140px]">
+              <button type="submit" disabled={submitting} className="btn-primary min-w-[130px]">
                 {submitting ? (
                   <Spinner />
                 ) : (
                   <>
-                    <Send size={16} />
+                    <Send size={14} strokeWidth={2} />
                     Send
-                    <ArrowRight size={14} />
+                    <ArrowRight size={13} />
                   </>
                 )}
               </button>
@@ -175,32 +179,41 @@ export default function Transfer() {
           </form>
         </div>
 
-        {/* Side info card */}
-        <aside className="space-y-4">
-          <div className="card p-5">
-            <div className="flex items-center gap-2 text-emerald-600">
-              <ShieldCheck size={18} strokeWidth={2.25} />
-              <p className="text-sm font-semibold text-slate-900">Safe by design</p>
-            </div>
-            <ul className="mt-3 space-y-2 text-sm text-slate-600">
-              <li className="flex items-start gap-2">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
-                ACID database transaction — debit & credit in one atomic step.
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
-                Idempotency-Key UUID prevents double-charges on retry.
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
-                Row locks + @Version prevent lost updates under concurrency.
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" />
-                Rate-limited to 10 transfers/minute.
-              </li>
-            </ul>
+        <aside className="card p-5">
+          <div className="flex items-center gap-2">
+            <ShieldCheck size={15} className="text-emerald-600" strokeWidth={2} />
+            <p className="text-sm font-semibold text-slate-900">What protects this transfer</p>
           </div>
+          <ul className="mt-4 space-y-3 text-sm text-slate-600">
+            <li className="flex items-start gap-2.5">
+              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-slate-400" />
+              <span>
+                <span className="font-medium text-slate-800">ACID transaction</span> — debit
+                and credit happen as one step or not at all.
+              </span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-slate-400" />
+              <span>
+                <span className="font-medium text-slate-800">Idempotency key</span> — retries
+                return the same response, never re-process.
+              </span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-slate-400" />
+              <span>
+                <span className="font-medium text-slate-800">Row locks + @Version</span> — no
+                lost updates under concurrency.
+              </span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-slate-400" />
+              <span>
+                <span className="font-medium text-slate-800">Rate limited</span> — 10 transfers
+                per minute, ₹50,000 daily cap.
+              </span>
+            </li>
+          </ul>
         </aside>
       </div>
     </>

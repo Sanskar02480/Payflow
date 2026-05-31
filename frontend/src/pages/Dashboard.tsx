@@ -6,11 +6,10 @@ import {
   Send,
   History as HistoryIcon,
   Receipt,
-  TrendingUp,
 } from 'lucide-react';
 import { transactionApi, walletApi, extractErrorMessage } from '../api/client';
 import type { TransactionView, WalletBalance } from '../types';
-import { formatCurrency, relativeTime, initialsFromEmail } from '../lib/format';
+import { formatCurrency, relativeTime } from '../lib/format';
 import PageHeader from '../components/PageHeader';
 import Spinner from '../components/Spinner';
 import EmptyState from '../components/EmptyState';
@@ -54,101 +53,103 @@ export default function Dashboard() {
   return (
     <>
       <PageHeader
-        title={`Welcome back${email ? `, ${email.split('@')[0]}` : ''}`}
-        subtitle="Here's a snapshot of your wallet."
+        title={email ? `Hi, ${email.split('@')[0]}` : 'Dashboard'}
+        subtitle="Snapshot of your wallet and recent activity."
       />
 
       <div className="grid gap-5 lg:grid-cols-3">
-        {/* Balance card */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-700 via-brand-600 to-brand-500 p-6 text-white shadow-soft lg:col-span-2">
-          <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
-          <div className="absolute -bottom-8 right-12 h-24 w-24 rounded-full bg-white/10 blur-2xl" />
+        {/* Balance card -- sophisticated dark treatment */}
+        <div className="relative overflow-hidden rounded-2xl bg-slate-950 p-7 text-white shadow-soft lg:col-span-2">
+          {/* hairline accent on top edge */}
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+          {/* subtle radial highlight */}
+          <div
+            className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-brand-500/15 blur-3xl"
+            aria-hidden
+          />
 
-          <div className="relative">
-            <p className="text-sm font-medium uppercase tracking-wide text-white/70">
-              Available balance
-            </p>
-            <div className="mt-2 flex items-baseline gap-2">
-              {loading ? (
-                <Spinner size={28} className="text-white" />
-              ) : (
-                <span className="text-4xl font-bold tracking-tight sm:text-5xl">
-                  {wallet ? formatCurrency(wallet.balance) : '—'}
-                </span>
+          <div className="relative flex items-start justify-between">
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-400">
+                Available balance
+              </p>
+              <div className="mt-3 flex items-baseline gap-3">
+                {loading ? (
+                  <Spinner size={28} className="text-white" />
+                ) : (
+                  <span className="tnum text-5xl font-semibold tracking-tightest sm:text-6xl">
+                    {wallet ? formatCurrency(wallet.balance) : '—'}
+                  </span>
+                )}
+              </div>
+              {wallet && (
+                <p className="mt-3 inline-flex items-center gap-2 text-xs text-slate-400">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  Wallet #{wallet.walletId}
+                  <span className="text-slate-600">•</span>
+                  Active
+                </p>
               )}
             </div>
-            {wallet && (
-              <p className="mt-2 text-sm text-white/70">Wallet #{wallet.walletId}</p>
-            )}
+          </div>
 
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link
-                to="/transfer"
-                className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-brand-700 shadow-sm transition hover:bg-brand-50"
-              >
-                <Send size={16} />
-                Send money
-              </Link>
-              <Link
-                to="/history"
-                className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
-              >
-                <HistoryIcon size={16} />
-                View history
-              </Link>
-            </div>
+          <div className="relative mt-8 flex flex-wrap gap-2.5">
+            <Link
+              to="/transfer"
+              className="inline-flex items-center gap-2 rounded-md bg-white px-3.5 py-2 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
+            >
+              <Send size={15} strokeWidth={2} />
+              Send money
+            </Link>
+            <Link
+              to="/history"
+              className="inline-flex items-center gap-2 rounded-md border border-white/15 bg-white/5 px-3.5 py-2 text-sm font-medium text-white backdrop-blur transition hover:bg-white/10"
+            >
+              <HistoryIcon size={15} strokeWidth={2} />
+              View transactions
+            </Link>
           </div>
         </div>
 
-        {/* Stats column */}
-        <div className="space-y-5">
+        {/* Side column */}
+        <div className="space-y-4">
           <DailyLimitBar />
 
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-1">
-            <div className="card p-5">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-500">Received</p>
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
-                  <ArrowDownLeft size={18} strokeWidth={2.25} />
-                </div>
-              </div>
-              <p className="mt-3 text-xl font-bold tracking-tight text-slate-900">
-                {formatCurrency(receivedTotal)}
-              </p>
-              <p className="mt-1 text-xs text-slate-500">Last 5 txns</p>
-            </div>
-
-            <div className="card p-5">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-500">Sent</p>
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-50 text-rose-600">
-                  <ArrowUpRight size={18} strokeWidth={2.25} />
-                </div>
-              </div>
-              <p className="mt-3 text-xl font-bold tracking-tight text-slate-900">
-                {formatCurrency(sentTotal)}
-              </p>
-              <p className="mt-1 text-xs text-slate-500">Last 5 txns</p>
-            </div>
+            <StatCard
+              label="Recently received"
+              value={receivedTotal}
+              tone="positive"
+              icon={ArrowDownLeft}
+            />
+            <StatCard
+              label="Recently sent"
+              value={sentTotal}
+              tone="negative"
+              icon={ArrowUpRight}
+            />
           </div>
         </div>
       </div>
 
-      {/* Recent transactions */}
-      <div className="mt-8 card">
+      {/* Recent activity */}
+      <div className="mt-8 card overflow-hidden">
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-          <div className="flex items-center gap-2">
-            <TrendingUp size={18} className="text-slate-500" />
-            <h2 className="font-semibold text-slate-900">Recent activity</h2>
+          <div>
+            <h2 className="text-sm font-semibold text-slate-900">Recent activity</h2>
+            <p className="mt-0.5 text-xs text-slate-500">Last 5 transactions</p>
           </div>
-          <Link to="/history" className="text-sm font-medium text-brand-700 hover:text-brand-800">
+          <Link
+            to="/history"
+            className="text-xs font-medium text-slate-600 hover:text-slate-900"
+          >
             View all →
           </Link>
         </div>
 
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <Spinner size={24} className="text-brand-600" />
+            <Spinner size={20} className="text-slate-400" />
           </div>
         ) : recent.length === 0 ? (
           <EmptyState
@@ -159,40 +160,43 @@ export default function Dashboard() {
         ) : (
           <ul className="divide-y divide-slate-100">
             {recent.map((t) => {
+              const isRefund = t.status === 'REFUND';
               const sent = t.direction === 'SENT';
               const counterparty = sent ? t.recipientEmail : t.senderEmail;
               return (
-                <li key={t.id} className="flex items-center gap-4 px-6 py-4 hover:bg-slate-50">
+                <li
+                  key={t.id}
+                  className="flex items-center gap-4 px-6 py-3.5 transition-colors hover:bg-slate-50/60"
+                >
                   <div
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
-                      sent ? 'bg-rose-50 text-rose-600' : 'bg-emerald-50 text-emerald-600'
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
+                      isRefund
+                        ? 'bg-slate-100 text-slate-600'
+                        : sent
+                        ? 'bg-rose-50 text-rose-600'
+                        : 'bg-emerald-50 text-emerald-600'
                     }`}
                   >
-                    {sent ? <ArrowUpRight size={18} /> : <ArrowDownLeft size={18} />}
+                    {sent ? <ArrowUpRight size={16} /> : <ArrowDownLeft size={16} />}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="truncate text-sm font-semibold text-slate-900">
-                        {sent ? 'Sent to' : 'Received from'} {counterparty}
-                      </p>
-                    </div>
-                    <p className="mt-0.5 text-xs text-slate-500">
+                    <p className="truncate text-sm font-medium text-slate-900">
+                      {isRefund ? 'Refund' : sent ? 'Sent to' : 'Received from'}{' '}
+                      <span className="text-slate-600">{counterparty}</span>
+                    </p>
+                    <p className="mt-0.5 text-[11px] uppercase tracking-wider text-slate-400">
                       {relativeTime(t.createdAt)} · ID #{t.id}
                     </p>
                   </div>
                   <div className="text-right">
                     <p
-                      className={`text-sm font-bold ${
+                      className={`tnum text-sm font-semibold ${
                         sent ? 'text-rose-600' : 'text-emerald-600'
                       }`}
                     >
                       {sent ? '−' : '+'}
                       {formatCurrency(t.amount)}
                     </p>
-                    <p className="mt-0.5 text-xs text-slate-500">{t.status}</p>
-                  </div>
-                  <div className="hidden h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600 sm:flex">
-                    {initialsFromEmail(counterparty)}
                   </div>
                 </li>
               );
@@ -201,5 +205,33 @@ export default function Dashboard() {
         )}
       </div>
     </>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  tone,
+  icon: Icon,
+}: {
+  label: string;
+  value: number;
+  tone: 'positive' | 'negative';
+  icon: typeof ArrowDownLeft;
+}) {
+  return (
+    <div className="card p-4">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-medium text-slate-500">{label}</p>
+        <Icon
+          size={14}
+          strokeWidth={2}
+          className={tone === 'positive' ? 'text-emerald-500' : 'text-rose-500'}
+        />
+      </div>
+      <p className="tnum mt-2 text-lg font-semibold tracking-tight text-slate-900">
+        {formatCurrency(value)}
+      </p>
+    </div>
   );
 }

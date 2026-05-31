@@ -18,13 +18,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             style: {
               background: '#0f172a',
               color: '#f1f5f9',
-              borderRadius: '12px',
-              padding: '12px 16px',
-              fontSize: '14px',
+              borderRadius: '8px',
+              padding: '10px 14px',
+              fontSize: '13px',
               fontWeight: 500,
+              boxShadow: '0 8px 24px -6px rgba(15,23,42,0.25)',
             },
-            success: { iconTheme: { primary: '#10b981', secondary: '#0f172a' } },
-            error: { iconTheme: { primary: '#ef4444', secondary: '#0f172a' } },
+            success: { iconTheme: { primary: '#34d399', secondary: '#0f172a' } },
+            error: { iconTheme: { primary: '#f87171', secondary: '#0f172a' } },
           }}
         />
       </AuthProvider>

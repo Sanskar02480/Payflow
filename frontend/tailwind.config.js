@@ -22,11 +22,17 @@ export default {
         },
       },
       boxShadow: {
-        card: '0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.03)',
-        soft: '0 4px 16px -2px rgb(15 23 42 / 0.08)',
+        // Replaces the old generic "card" shadow. Hairline + soft drop.
+        card: '0 0 0 1px rgb(15 23 42 / 0.04), 0 1px 2px 0 rgb(15 23 42 / 0.04)',
+        soft: '0 8px 24px -6px rgb(15 23 42 / 0.10), 0 2px 6px -2px rgb(15 23 42 / 0.05)',
+        // Subtle inner highlight at the top of dark cards
+        'inner-light': 'inset 0 1px 0 0 rgb(255 255 255 / 0.06)',
+      },
+      letterSpacing: {
+        tightest: '-0.04em',
       },
       animation: {
-        'fade-in': 'fadeIn 0.3s ease-out',
+        'fade-in': 'fadeIn 0.25s ease-out',
         'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
       },
       keyframes: {
@@ -35,9 +41,17 @@ export default {
           '100%': { opacity: '1' },
         },
         slideUp: {
-          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '0%': { opacity: '0', transform: 'translateY(6px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
+      },
+      backgroundImage: {
+        // Faint dot grid used on auth pages instead of bright gradients
+        'dot-grid':
+          'radial-gradient(circle, rgb(15 23 42 / 0.06) 1px, transparent 1px)',
+      },
+      backgroundSize: {
+        'dot-grid': '20px 20px',
       },
     },
   },

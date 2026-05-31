@@ -121,7 +121,7 @@ export default function History() {
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Spinner size={24} className="text-brand-600" />
+            <Spinner size={20} className="text-slate-400" />
           </div>
         ) : filtered.length === 0 ? (
           <EmptyState
@@ -133,13 +133,13 @@ export default function History() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  <th className="px-6 py-3">Type</th>
-                  <th className="px-6 py-3">From / To</th>
-                  <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3">Date</th>
-                  <th className="px-6 py-3 text-right">Amount</th>
-                  <th className="px-6 py-3 text-right">Action</th>
+                <tr className="border-b border-slate-100 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+                  <th className="px-6 py-3 font-semibold">Type</th>
+                  <th className="px-6 py-3 font-semibold">From / To</th>
+                  <th className="px-6 py-3 font-semibold">Status</th>
+                  <th className="px-6 py-3 font-semibold">Date</th>
+                  <th className="px-6 py-3 text-right font-semibold">Amount</th>
+                  <th className="px-6 py-3 text-right font-semibold">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -148,24 +148,24 @@ export default function History() {
                   const isRefund = t.status === 'REFUND';
                   const isReversed = t.status === 'REVERSED';
                   return (
-                    <tr key={t.id} className="text-sm hover:bg-slate-50">
+                    <tr key={t.id} className="text-sm transition-colors hover:bg-slate-50/60">
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2.5">
                           <div
-                            className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                            className={`flex h-7 w-7 items-center justify-center rounded-full ${
                               isRefund
-                                ? 'bg-indigo-50 text-indigo-600'
+                                ? 'bg-slate-100 text-slate-600'
                                 : sent
                                 ? 'bg-rose-50 text-rose-600'
                                 : 'bg-emerald-50 text-emerald-600'
                             }`}
                           >
                             {isRefund ? (
-                              <Undo2 size={16} />
+                              <Undo2 size={14} />
                             ) : sent ? (
-                              <ArrowUpRight size={16} />
+                              <ArrowUpRight size={14} />
                             ) : (
-                              <ArrowDownLeft size={16} />
+                              <ArrowDownLeft size={14} />
                             )}
                           </div>
                           <span className="font-medium text-slate-700">
@@ -177,7 +177,7 @@ export default function History() {
                         <p className="font-medium">
                           {sent ? t.recipientEmail : t.senderEmail}
                         </p>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-[11px] uppercase tracking-wider text-slate-400">
                           ID #{t.id}
                           {t.refundOfTransactionId
                             ? ` · refund of #${t.refundOfTransactionId}`
@@ -187,9 +187,9 @@ export default function History() {
                       <td className="px-6 py-4">
                         <StatusBadge status={t.status} />
                       </td>
-                      <td className="px-6 py-4 text-slate-500">{formatDate(t.createdAt)}</td>
+                      <td className="px-6 py-4 text-xs text-slate-500">{formatDate(t.createdAt)}</td>
                       <td
-                        className={`px-6 py-4 text-right font-bold ${
+                        className={`tnum px-6 py-4 text-right font-semibold ${
                           isReversed
                             ? 'text-slate-400 line-through'
                             : sent
@@ -204,13 +204,13 @@ export default function History() {
                         {t.refundable ? (
                           <button
                             onClick={() => setRefundTarget(t)}
-                            className="inline-flex items-center gap-1 rounded-md border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-[12px] font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
                           >
-                            <Undo2 size={13} />
+                            <Undo2 size={12} />
                             Refund
                           </button>
                         ) : (
-                          <span className="text-xs text-slate-400">—</span>
+                          <span className="text-xs text-slate-300">—</span>
                         )}
                       </td>
                     </tr>
@@ -268,11 +268,11 @@ export default function History() {
 
 function StatusBadge({ status }: { status: TransactionView['status'] }) {
   const map: Record<TransactionView['status'], string> = {
-    COMPLETED: 'bg-emerald-50 text-emerald-700',
-    PENDING:   'bg-amber-50 text-amber-700',
-    FAILED:    'bg-rose-50 text-rose-700',
-    REVERSED:  'bg-slate-100 text-slate-600',
-    REFUND:    'bg-indigo-50 text-indigo-700',
+    COMPLETED: 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/10',
+    PENDING:   'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/10',
+    FAILED:    'bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-600/10',
+    REVERSED:  'bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-600/10',
+    REFUND:    'bg-slate-900 text-white',
   };
   return <span className={`badge ${map[status]}`}>{status}</span>;
 }
