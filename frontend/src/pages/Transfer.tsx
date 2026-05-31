@@ -6,6 +6,7 @@ import { paymentApi, walletApi, extractErrorMessage } from '../api/client';
 import { formatCurrency } from '../lib/format';
 import PageHeader from '../components/PageHeader';
 import Spinner from '../components/Spinner';
+import DailyLimitBar from '../components/DailyLimitBar';
 import type { WalletBalance } from '../types';
 
 function newIdempotencyKey(): string {
@@ -70,6 +71,9 @@ export default function Transfer() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="card p-6 lg:col-span-2">
+          <div className="mb-5 rounded-lg border border-slate-100 bg-slate-50/50 p-4">
+            <DailyLimitBar compact />
+          </div>
           <form onSubmit={onSubmit} className="space-y-5">
             <div>
               <label className="label" htmlFor="recipient">

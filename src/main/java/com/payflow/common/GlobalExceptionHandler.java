@@ -1,5 +1,6 @@
 package com.payflow.common;
 
+import com.payflow.transaction.DailyLimitExceededException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -71,6 +72,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleOptimisticLock(ObjectOptimisticLockingFailureException ex, HttpServletRequest req) {
         return build(HttpStatus.CONFLICT, "OPTIMISTIC_LOCK_FAILED",
                 "Concurrent modification detected, please retry", req.getRequestURI(), List.of());
+    }
+
+    @ExceptionHandler(DailyLimitExceededException.class)
+    public ResponseEntity<ApiError> handleDailyLimit(DailyLimitExceededException ex, HttpServletRequest req) {
+        return build(HttpStatus.TOO_MANY_REQUESTS, "DAILY_LIMIT_EXCEEDED",
+                ex.getMessage(), req.getRequestURI(), List.of());
     }
 
     @ExceptionHandler(Exception.class)

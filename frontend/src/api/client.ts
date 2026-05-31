@@ -1,6 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import type {
   AuthResponse,
+  DailySpent,
   PageResponse,
   TransactionView,
   TransferRequest,
@@ -83,6 +84,7 @@ export const paymentApi = {
         headers: { 'Idempotency-Key': idempotencyKey },
       })
       .then((r) => r.data),
+  dailySpent: () => http.get<DailySpent>('/api/payments/daily-spent').then((r) => r.data),
 };
 
 export const transactionApi = {

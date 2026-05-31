@@ -1,5 +1,7 @@
 package com.payflow.transaction;
 
+import com.payflow.redis.DailyLimitService;
+import com.payflow.transaction.dto.DailySpentResponse;
 import com.payflow.transaction.dto.TransferRequest;
 import com.payflow.transaction.dto.TransferResponse;
 import jakarta.validation.Valid;
@@ -17,6 +19,7 @@ import java.util.UUID;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final DailyLimitService dailyLimitService;
 
     @PostMapping("/transfer")
     public ResponseEntity<TransferResponse> transfer(
@@ -35,5 +38,16 @@ public class PaymentController {
         }
 
         return ResponseEntity.ok(paymentService.transfer(principal.getUsername(), idempotencyKey, req));
+    }
+
+    /** How much the authenticated user has sent today, plus the cap and what's left. */
+    @GetMapping("/daily-spent")
+    public ResponseEntity<DailySpentResponse> dailySpent(@AuthenticationPrincipal UserDetails principal) {
+        String email = principal.getUsername();
+        return ResponseEntity.ok(new DailySpentResponse(
+                dailyLimitService.getSpentToday(email),
+                dailyLimitService.getDailyLimit(),
+                dailyLimitService.getRemainingToday(email)
+        ));
     }
 }

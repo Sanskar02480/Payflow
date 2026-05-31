@@ -30,6 +30,12 @@ export interface TransferResponse {
   replayed: boolean;
 }
 
+export interface DailySpent {
+  spentToday: number;
+  dailyLimit: number;
+  remaining: number;
+}
+
 export interface TransactionView {
   id: number;
   senderEmail: string;

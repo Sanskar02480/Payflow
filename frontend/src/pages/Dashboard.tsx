@@ -14,6 +14,7 @@ import { formatCurrency, relativeTime, initialsFromEmail } from '../lib/format';
 import PageHeader from '../components/PageHeader';
 import Spinner from '../components/Spinner';
 import EmptyState from '../components/EmptyState';
+import DailyLimitBar from '../components/DailyLimitBar';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -101,30 +102,34 @@ export default function Dashboard() {
 
         {/* Stats column */}
         <div className="space-y-5">
-          <div className="card p-5">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-slate-500">Recently received</p>
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
-                <ArrowDownLeft size={18} strokeWidth={2.25} />
-              </div>
-            </div>
-            <p className="mt-3 text-2xl font-bold tracking-tight text-slate-900">
-              {formatCurrency(receivedTotal)}
-            </p>
-            <p className="mt-1 text-xs text-slate-500">From your last 5 transactions</p>
-          </div>
+          <DailyLimitBar />
 
-          <div className="card p-5">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-slate-500">Recently sent</p>
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-50 text-rose-600">
-                <ArrowUpRight size={18} strokeWidth={2.25} />
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-1">
+            <div className="card p-5">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-slate-500">Received</p>
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                  <ArrowDownLeft size={18} strokeWidth={2.25} />
+                </div>
               </div>
+              <p className="mt-3 text-xl font-bold tracking-tight text-slate-900">
+                {formatCurrency(receivedTotal)}
+              </p>
+              <p className="mt-1 text-xs text-slate-500">Last 5 txns</p>
             </div>
-            <p className="mt-3 text-2xl font-bold tracking-tight text-slate-900">
-              {formatCurrency(sentTotal)}
-            </p>
-            <p className="mt-1 text-xs text-slate-500">From your last 5 transactions</p>
+
+            <div className="card p-5">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-slate-500">Sent</p>
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-50 text-rose-600">
+                  <ArrowUpRight size={18} strokeWidth={2.25} />
+                </div>
+              </div>
+              <p className="mt-3 text-xl font-bold tracking-tight text-slate-900">
+                {formatCurrency(sentTotal)}
+              </p>
+              <p className="mt-1 text-xs text-slate-500">Last 5 txns</p>
+            </div>
           </div>
         </div>
       </div>

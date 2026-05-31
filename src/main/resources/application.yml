@@ -58,6 +58,10 @@ payflow:
     remember-me-expiration-ms: 86400000 # 24 hours (when "Remember me" is checked)
   password-reset:
     token-ttl-minutes: 15
+  daily-limit:
+    # Total amount a single user can SEND across all transfers within a UTC day.
+    # Refunds do not consume this budget; this is "outgoing spend" only.
+    amount: 50000.00
   kafka:
     payment-completed-topic: payment_completed
   rate-limit:
