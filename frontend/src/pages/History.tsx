@@ -6,6 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Undo2,
+  RefreshCw,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { paymentApi, transactionApi, extractErrorMessage } from '../api/client';
@@ -96,13 +97,25 @@ export default function History() {
               {f === 'ALL' ? 'All' : f === 'SENT' ? 'Sent' : 'Received'}
             </button>
           ))}
-          <div className="ml-auto text-xs text-slate-500">
-            {data && (
-              <>
-                Showing page {data.number + 1} of {Math.max(1, data.totalPages)} ·{' '}
-                {data.totalElements} total
-              </>
-            )}
+          <div className="ml-auto flex items-center gap-2">
+            <span className="text-xs text-slate-500">
+              {data && (
+                <>
+                  Showing page {data.number + 1} of {Math.max(1, data.totalPages)} ·{' '}
+                  {data.totalElements} total
+                </>
+              )}
+            </span>
+            <button
+              type="button"
+              onClick={() => setReloadCounter((n) => n + 1)}
+              disabled={loading}
+              className="rounded-md p-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50"
+              title="Refresh transactions"
+              aria-label="Refresh transactions"
+            >
+              <RefreshCw size={14} className={loading ? 'animate-spin' : ''} strokeWidth={2.25} />
+            </button>
           </div>
         </div>
 
