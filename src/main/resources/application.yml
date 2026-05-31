@@ -64,6 +64,7 @@ payflow:
     amount: 50000.00
   kafka:
     payment-completed-topic: payment_completed
+    payment-refunded-topic: payment_refunded
   rate-limit:
     payment-per-minute: 10
   idempotency:

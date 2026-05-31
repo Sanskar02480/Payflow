@@ -21,4 +21,13 @@ public class KafkaConfig {
                 .replicas(1)
                 .build();
     }
+
+    @Bean
+    public NewTopic paymentRefundedTopic(
+            @Value("${payflow.kafka.payment-refunded-topic}") String topic) {
+        return TopicBuilder.name(topic)
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
 }

@@ -77,11 +77,20 @@ export default function AdminTransactions() {
                             ? 'bg-emerald-50 text-emerald-700'
                             : t.status === 'PENDING'
                             ? 'bg-amber-50 text-amber-700'
+                            : t.status === 'REVERSED'
+                            ? 'bg-slate-100 text-slate-600'
+                            : t.status === 'REFUND'
+                            ? 'bg-indigo-50 text-indigo-700'
                             : 'bg-rose-50 text-rose-700'
                         }`}
                       >
                         {t.status}
                       </span>
+                      {t.refundOfTransactionId && (
+                        <p className="mt-1 text-xs text-slate-500">
+                          refund of #{t.refundOfTransactionId}
+                        </p>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-slate-500">{formatDate(t.createdAt)}</td>
                     <td className="px-6 py-4 text-right font-bold text-slate-900">

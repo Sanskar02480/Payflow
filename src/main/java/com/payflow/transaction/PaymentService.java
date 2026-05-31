@@ -2,6 +2,7 @@ package com.payflow.transaction;
 
 import com.payflow.redis.DailyLimitService;
 import com.payflow.redis.IdempotencyService;
+import com.payflow.transaction.dto.RefundResponse;
 import com.payflow.transaction.dto.TransferRequest;
 import com.payflow.transaction.dto.TransferResponse;
 import lombok.RequiredArgsConstructor;
@@ -9,15 +10,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- * Orchestrates a transfer. Idempotency + daily-limit layers wrap the ACID layer.
+ * Orchestrates transfers and refunds. Idempotency + daily-limit layers wrap the
+ * ACID layer.
  *
- *   1) Idempotency check (Redis) BEFORE opening a DB tx -- fast reject on replay.
- *   2) Daily-limit consume (Redis) -- atomic INCRBY; rolled back on ACID failure.
- *   3) Delegate to AcidTransferExecutor (its own @Transactional + @Retryable).
- *   4) Cache the response in Redis under the idempotency key.
+ *   transfer:
+ *     1) Idempotency replay check (Redis) BEFORE opening a DB tx
+ *     2) Reserve idempotency key (SETNX)
+ *     3) Try-consume daily-limit budget
+ *     4) Delegate to AcidTransferExecutor.execute
+ *     5) On failure, release BOTH reservations
  *
- * Order matters: idempotency replays MUST short-circuit before we touch the
- * daily budget, otherwise a retried network call would double-consume it.
+ *   refund:
+ *     1) Idempotency replay check (separate key)
+ *     2) Reserve idempotency key
+ *     3) Delegate to AcidTransferExecutor.executeRefund
+ *        (no daily-limit -- refunds are corrective, not new spend)
+ *     4) On failure, release idempotency
  */
 @Service
 @RequiredArgsConstructor
@@ -30,24 +38,24 @@ public class PaymentService {
 
     public TransferResponse transfer(String senderEmail, String idempotencyKey, TransferRequest req) {
 
-        // 1) Replay path: cached response already exists.
         var cached = idempotencyService.getStoredResponse(idempotencyKey);
         if (cached.isPresent() && cached.get() instanceof TransferResponse tr) {
-            log.info("Idempotency hit for key {} -> replaying", idempotencyKey);
-            return asReplay(tr);
+            log.info("Idempotency hit for key {} -> replaying transfer", idempotencyKey);
+            return new TransferResponse(
+                    tr.transactionId(), tr.senderEmail(), tr.recipientEmail(),
+                    tr.amount(), tr.status(), tr.senderNewBalance(), tr.completedAt(), true);
         }
 
-        // 2) First caller wins. SETNX atomically reserves the key for 24h.
         if (!idempotencyService.tryReserve(idempotencyKey)) {
-            // Lost the SETNX race -- another request reserved first. Re-check cache.
             var maybe = idempotencyService.getStoredResponse(idempotencyKey);
             if (maybe.isPresent() && maybe.get() instanceof TransferResponse tr) {
-                return asReplay(tr);
+                return new TransferResponse(
+                        tr.transactionId(), tr.senderEmail(), tr.recipientEmail(),
+                        tr.amount(), tr.status(), tr.senderNewBalance(), tr.completedAt(), true);
             }
             throw new IllegalStateException("Concurrent request with same Idempotency-Key in flight");
         }
 
-        // 3) Daily limit reservation. Released on ACID failure.
         if (!dailyLimitService.tryConsume(senderEmail, req.amount())) {
             idempotencyService.release(idempotencyKey);
             throw new DailyLimitExceededException(
@@ -61,16 +69,44 @@ public class PaymentService {
             idempotencyService.storeResponse(idempotencyKey, response);
             return response;
         } catch (RuntimeException e) {
-            // Release BOTH reservations so the client can retry cleanly with the same key.
             idempotencyService.release(idempotencyKey);
             dailyLimitService.release(senderEmail, req.amount());
             throw e;
         }
     }
 
-    private static TransferResponse asReplay(TransferResponse tr) {
-        return new TransferResponse(
-                tr.transactionId(), tr.senderEmail(), tr.recipientEmail(),
-                tr.amount(), tr.status(), tr.senderNewBalance(), tr.completedAt(), true);
+    public RefundResponse refund(String callerEmail, Long originalTransactionId, String idempotencyKey) {
+
+        var cached = idempotencyService.getStoredResponse(idempotencyKey);
+        if (cached.isPresent() && cached.get() instanceof RefundResponse rr) {
+            log.info("Idempotency hit for key {} -> replaying refund", idempotencyKey);
+            return new RefundResponse(
+                    rr.refundTransactionId(), rr.originalTransactionId(),
+                    rr.originalSenderEmail(), rr.originalRecipientEmail(),
+                    rr.amount(), rr.status(),
+                    rr.originalSenderNewBalance(), rr.refundedAt(), true);
+        }
+
+        if (!idempotencyService.tryReserve(idempotencyKey)) {
+            var maybe = idempotencyService.getStoredResponse(idempotencyKey);
+            if (maybe.isPresent() && maybe.get() instanceof RefundResponse rr) {
+                return new RefundResponse(
+                        rr.refundTransactionId(), rr.originalTransactionId(),
+                        rr.originalSenderEmail(), rr.originalRecipientEmail(),
+                        rr.amount(), rr.status(),
+                        rr.originalSenderNewBalance(), rr.refundedAt(), true);
+            }
+            throw new IllegalStateException("Concurrent refund with same Idempotency-Key in flight");
+        }
+
+        try {
+            RefundResponse response = acidTransferExecutor.executeRefund(
+                    callerEmail, originalTransactionId, idempotencyKey);
+            idempotencyService.storeResponse(idempotencyKey, response);
+            return response;
+        } catch (RuntimeException e) {
+            idempotencyService.release(idempotencyKey);
+            throw e;
+        }
     }
 }

@@ -3,6 +3,7 @@ import type {
   AuthResponse,
   DailySpent,
   PageResponse,
+  RefundResponse,
   TransactionView,
   TransferRequest,
   TransferResponse,
@@ -81,6 +82,12 @@ export const paymentApi = {
   transfer: (req: TransferRequest, idempotencyKey: string) =>
     http
       .post<TransferResponse>('/api/payments/transfer', req, {
+        headers: { 'Idempotency-Key': idempotencyKey },
+      })
+      .then((r) => r.data),
+  refund: (transactionId: number, idempotencyKey: string) =>
+    http
+      .post<RefundResponse>(`/api/payments/refund/${transactionId}`, null, {
         headers: { 'Idempotency-Key': idempotencyKey },
       })
       .then((r) => r.data),

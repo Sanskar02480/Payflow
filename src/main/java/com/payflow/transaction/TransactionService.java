@@ -34,6 +34,9 @@ public class TransactionService {
                 .findByWalletId(wallet.getId(), PageRequest.of(page, size))
                 .map(t -> {
                     boolean sent = t.getSenderWallet().getId().equals(wallet.getId());
+                    boolean refundable = sent
+                            && t.getStatus() == TransactionStatus.COMPLETED
+                            && t.getRefundOfTransactionId() == null;
                     return new TransactionView(
                             t.getId(),
                             t.getSenderWallet().getUser().getEmail(),
@@ -41,6 +44,8 @@ public class TransactionService {
                             t.getAmount(),
                             t.getStatus(),
                             sent ? "SENT" : "RECEIVED",
+                            t.getRefundOfTransactionId(),
+                            refundable,
                             t.getCreatedAt()
                     );
                 });
@@ -58,6 +63,9 @@ public class TransactionService {
                         t.getAmount(),
                         t.getStatus(),
                         null,
+                        t.getRefundOfTransactionId(),
+                        // Admin can refund anything COMPLETED that isn't already a refund.
+                        t.getStatus() == TransactionStatus.COMPLETED && t.getRefundOfTransactionId() == null,
                         t.getCreatedAt()
                 ));
     }

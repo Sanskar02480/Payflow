@@ -1,6 +1,11 @@
 export type Role = 'USER' | 'ADMIN';
 
-export type TransactionStatus = 'PENDING' | 'COMPLETED' | 'FAILED';
+export type TransactionStatus =
+  | 'PENDING'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'REVERSED' // original tx that was refunded
+  | 'REFUND';  // compensating tx created by a refund
 
 export interface AuthResponse {
   token: string;
@@ -43,7 +48,21 @@ export interface TransactionView {
   amount: number;
   status: TransactionStatus;
   direction: 'SENT' | 'RECEIVED' | null;
+  refundOfTransactionId: number | null;
+  refundable: boolean;
   createdAt: string;
+}
+
+export interface RefundResponse {
+  refundTransactionId: number;
+  originalTransactionId: number;
+  originalSenderEmail: string;
+  originalRecipientEmail: string;
+  amount: number;
+  status: TransactionStatus;
+  originalSenderNewBalance: number;
+  refundedAt: string;
+  replayed: boolean;
 }
 
 export interface PageResponse<T> {

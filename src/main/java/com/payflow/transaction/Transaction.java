@@ -47,6 +47,14 @@ public class Transaction {
     @Column(name = "idempotency_key", nullable = false, unique = true, length = 100)
     private String idempotencyKey;
 
+    /**
+     * For status=REFUND rows: id of the original Transaction this refund undoes.
+     * For all other statuses: null.
+     * Allows /history to render "Refund of #42" and prevents refunding a refund.
+     */
+    @Column(name = "refund_of_transaction_id")
+    private Long refundOfTransactionId;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 

@@ -2,6 +2,7 @@ package com.payflow.transaction;
 
 import com.payflow.redis.DailyLimitService;
 import com.payflow.transaction.dto.DailySpentResponse;
+import com.payflow.transaction.dto.RefundResponse;
 import com.payflow.transaction.dto.TransferRequest;
 import com.payflow.transaction.dto.TransferResponse;
 import jakarta.validation.Valid;
@@ -49,5 +50,28 @@ public class PaymentController {
                 dailyLimitService.getDailyLimit(),
                 dailyLimitService.getRemainingToday(email)
         ));
+    }
+
+    /**
+     * Refund a completed transaction. Only the original sender or an ADMIN
+     * can call this; enforced inside AcidTransferExecutor.executeRefund.
+     * Requires an Idempotency-Key UUID separate from the original transfer's.
+     */
+    @PostMapping("/refund/{transactionId}")
+    public ResponseEntity<RefundResponse> refund(
+            @AuthenticationPrincipal UserDetails principal,
+            @PathVariable Long transactionId,
+            @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey
+    ) {
+        if (idempotencyKey == null || idempotencyKey.isBlank()) {
+            throw new IllegalArgumentException("Idempotency-Key header is required");
+        }
+        try {
+            UUID.fromString(idempotencyKey);
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException("Idempotency-Key must be a valid UUID");
+        }
+        return ResponseEntity.ok(
+                paymentService.refund(principal.getUsername(), transactionId, idempotencyKey));
     }
 }
