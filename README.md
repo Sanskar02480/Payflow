@@ -107,6 +107,9 @@ payflow/
 │   ├── common/                      # ApiError + GlobalExceptionHandler
 │   └── config/                      # SecurityConfig, RedisConfig, KafkaConfig
 │
+├── src/test/java/com/payflow/
+│   └── transaction/PaymentServiceTest.java   # 7 unit tests, pure Mockito
+│
 └── frontend/
     ├── package.json
     ├── vite.config.ts               # dev proxy /api → localhost:8080
@@ -171,6 +174,28 @@ Open **http://localhost:5173**.
 docker compose down              # stop containers, keep DB volume
 docker compose down -v           # also wipe the Postgres volume
 ```
+
+---
+
+## Testing
+
+```powershell
+mvn test
+```
+
+The suite covers `PaymentService` end-to-end via Mockito (no real Redis or
+Postgres needed, runs in ~2s):
+
+- happy-path transfer
+- duplicate `Idempotency-Key` replay
+- daily-limit exceeded throws + releases the idempotency reservation
+- ACID-layer failure releases both idempotency and daily-limit reservations
+- happy-path refund (and verifies refunds don't consume the daily budget)
+- duplicate idempotency-key refund replay
+- ACID-layer refund failure releases the idempotency reservation
+
+Real DB-backed integration tests (Testcontainers) for `AcidTransferExecutor`
+are a natural next step.
 
 ---
 
