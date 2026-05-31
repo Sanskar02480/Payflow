@@ -65,7 +65,7 @@ export default function History() {
       toast.success(
         res.replayed
           ? `Replayed earlier refund of ${formatCurrency(res.amount)}`
-          : `Refunded ${formatCurrency(res.amount)} from ${res.originalRecipientEmail}`,
+          : `Refunded ${formatCurrency(res.amount)} to ${res.originalSenderEmail}`,
       );
       setRefundTarget(null);
       setReloadCounter((n) => n + 1);
@@ -239,7 +239,7 @@ export default function History() {
         title="Refund this transfer?"
         message={
           refundTarget
-            ? `This will move ${formatCurrency(refundTarget.amount)} from ${refundTarget.recipientEmail} back to you. The original transaction will be marked REVERSED, and a new REFUND record will be added to both histories.`
+            ? `This will return ${formatCurrency(refundTarget.amount)} to ${refundTarget.senderEmail} (the original sender). Your balance will decrease by this amount. The original transaction will be marked REVERSED, and a new REFUND record will be added to both histories.`
             : ''
         }
         confirmLabel="Yes, refund"

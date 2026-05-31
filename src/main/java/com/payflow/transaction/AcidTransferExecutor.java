@@ -189,11 +189,16 @@ public class AcidTransferExecutor {
         User caller = userRepository.findByEmail(callerEmail)
                 .orElseThrow(() -> new EntityNotFoundException("Caller not found"));
 
-        // Auth: only the original sender or an ADMIN can refund.
+        // Auth: only the original RECIPIENT (the party who has the money) or an
+        // ADMIN can refund. The original sender cannot unilaterally pull money
+        // back -- that would be theft, not a refund. Matches Stripe / PayPal /
+        // Venmo: the money holder is the only party who can voluntarily release
+        // the funds. Admin acts as the chargeback / dispute override.
         boolean isAdmin = caller.getRole() == Role.ADMIN;
-        boolean isOriginalSender = original.getSenderWallet().getUser().getId().equals(caller.getId());
-        if (!isAdmin && !isOriginalSender) {
-            throw new AccessDeniedException("Only the sender or an admin can refund this transaction");
+        boolean isOriginalRecipient = original.getReceiverWallet().getUser().getId().equals(caller.getId());
+        if (!isAdmin && !isOriginalRecipient) {
+            throw new AccessDeniedException(
+                    "Only the recipient or an admin can refund this transaction");
         }
 
         if (original.getStatus() != TransactionStatus.COMPLETED) {

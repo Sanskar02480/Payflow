@@ -34,7 +34,11 @@ public class TransactionService {
                 .findByWalletId(wallet.getId(), PageRequest.of(page, size))
                 .map(t -> {
                     boolean sent = t.getSenderWallet().getId().equals(wallet.getId());
-                    boolean refundable = sent
+                    // Refund button shows for the RECIPIENT of the original (they have
+                    // the money; only they can voluntarily return it). The sender
+                    // cannot unilaterally claw funds back -- they'd need an admin
+                    // to force-refund.
+                    boolean refundable = !sent
                             && t.getStatus() == TransactionStatus.COMPLETED
                             && t.getRefundOfTransactionId() == null;
                     return new TransactionView(
