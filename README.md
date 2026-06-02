@@ -7,6 +7,18 @@ Distributed payment processing backend with a React dashboard. Two users can reg
 **Infra** Docker Compose
 
 ---
+## Preview
+
+
+https://github.com/user-attachments/assets/58b75890-fec4-416a-a3ee-265b6810a719
+
+
+<img width="1914" height="902" alt="image" src="https://github.com/user-attachments/assets/131e7666-e9e8-4172-a0b7-349d0f9ff5e4" />
+<img width="1905" height="915" alt="Screenshot 2026-06-02 220245" src="https://github.com/user-attachments/assets/9da84347-5211-48ae-a667-a08d7e212846" />
+<img width="1919" height="911" alt="Screenshot 2026-06-02 220320" src="https://github.com/user-attachments/assets/cda158f4-379c-4947-80b8-651993a6c825" />
+
+
+
 
 ## Features
 
