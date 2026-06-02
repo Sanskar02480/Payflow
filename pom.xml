@@ -102,6 +102,14 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
         </dependency>
+        <!-- spring-dotenv: auto-loads .env from the project root at startup so
+             local `mvn spring-boot:run` picks up DB_PASSWORD / JWT_SECRET / etc.
+             without a separate `source .env` step. .env stays gitignored. -->
+        <dependency>
+            <groupId>me.paulschwarz</groupId>
+            <artifactId>spring-dotenv</artifactId>
+            <version>4.0.0</version>
+        </dependency>
 
         <!-- Testing -->
         <dependency>

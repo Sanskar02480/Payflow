@@ -175,31 +175,15 @@ docker compose down              # stop containers, keep DB volume
 docker compose down -v           # also wipe the Postgres volume
 ```
 
-### Loading `.env` for `mvn spring-boot:run`
+### How `.env` reaches the backend
 
-Docker Compose auto-loads `.env` from the project root, but Maven does
-not. When you run the backend outside of Compose (`mvn spring-boot:run`),
-source the file into your shell first so Spring Boot can see
-`DB_PASSWORD`, `JWT_SECRET`, etc. as environment variables:
-
-```bash
-# Git Bash / WSL
-set -a; source .env; set +a
-mvn spring-boot:run
-```
-
-```powershell
-# PowerShell
-Get-Content .env | Where-Object { $_ -match '^[^#=]+=' } | ForEach-Object {
-    $name, $value = $_ -split '=', 2
-    [Environment]::SetEnvironmentVariable($name, $value)
-}
-mvn spring-boot:run
-```
-
-Without this step you'll see `FATAL: password authentication failed for
-user "payflow"` because Spring Boot falls back to the `change-me-locally`
-placeholder defined in `application.yml`.
+Both Docker Compose **and** the local Spring Boot run pick up `.env`
+automatically. Compose has built-in support; Spring Boot uses the
+[`spring-dotenv`](https://github.com/paulschwarz/spring-dotenv)
+dependency in `pom.xml`, which loads `.env` from the project root at
+startup and exposes every entry as a property — so `${DB_PASSWORD}` and
+`${JWT_SECRET}` in `application.yml` resolve correctly with no extra
+shell setup. Just `mvn spring-boot:run` and you're good.
 
 ---
 
