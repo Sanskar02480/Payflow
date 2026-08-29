@@ -29,9 +29,32 @@ function readPersistedUser(): { email: string; role: Role } | null {
   }
 }
 
+function isTokenExpired(token: string | null): boolean {
+  if (!token) return true;
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return true;
+    const payload = JSON.parse(atob(parts[1]));
+    if (!payload.exp) return false;
+    return Date.now() >= payload.exp * 1000;
+  } catch {
+    return true;
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>(() => {
     const token = tokenStorage.get();
+    if (isTokenExpired(token)) {
+      tokenStorage.clear();
+      localStorage.removeItem(STORAGE_USER);
+      return {
+        token: null,
+        email: null,
+        role: null,
+        loading: false,
+      };
+    }
     const persisted = readPersistedUser();
     return {
       token,
