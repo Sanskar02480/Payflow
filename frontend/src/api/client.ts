@@ -35,9 +35,10 @@ http.interceptors.request.use((config) => {
 http.interceptors.response.use(
   (res) => res,
   (err: AxiosError<ApiError>) => {
-    if (err.response?.status === 401) {
+    if (err.response?.status === 401 || err.response?.status === 403) {
       tokenStorage.clear();
-      // Bounce to login if a protected call returns 401.
+      localStorage.removeItem('payflow.user');
+      // Bounce to login if a protected call returns 401 or 403.
       if (!window.location.pathname.startsWith('/login')) {
         window.location.href = '/login';
       }
