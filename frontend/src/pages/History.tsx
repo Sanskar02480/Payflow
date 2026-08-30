@@ -83,7 +83,7 @@ export default function History() {
 
       <div className="card overflow-hidden">
         {/* Filter chips */}
-        <div className="flex flex-wrap items-center gap-2 border-b border-slate-100 px-6 py-4">
+        <div className="flex flex-wrap items-center gap-2 border-b border-slate-100 dark:border-slate-800 px-6 py-4">
           {(['ALL', 'SENT', 'RECEIVED'] as Filter[]).map((f) => (
             <button
               key={f}
@@ -91,14 +91,14 @@ export default function History() {
               className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                 filter === f
                   ? 'bg-brand-600 text-white'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
               }`}
             >
               {f === 'ALL' ? 'All' : f === 'SENT' ? 'Sent' : 'Received'}
             </button>
           ))}
           <div className="ml-auto flex items-center gap-2">
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-slate-500 dark:text-slate-400">
               {data && (
                 <>
                   Showing page {data.number + 1} of {Math.max(1, data.totalPages)} ·{' '}
@@ -110,7 +110,7 @@ export default function History() {
               type="button"
               onClick={() => setReloadCounter((n) => n + 1)}
               disabled={loading}
-              className="rounded-md p-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50"
+              className="rounded-md p-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200 disabled:opacity-50"
               title="Refresh transactions"
               aria-label="Refresh transactions"
             >
@@ -133,7 +133,7 @@ export default function History() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-slate-100 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+                <tr className="border-b border-slate-100 dark:border-slate-800 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500">
                   <th className="px-6 py-3 font-semibold">Type</th>
                   <th className="px-6 py-3 font-semibold">From / To</th>
                   <th className="px-6 py-3 font-semibold">Status</th>
@@ -142,22 +142,22 @@ export default function History() {
                   <th className="px-6 py-3 text-right font-semibold">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {filtered.map((t) => {
                   const sent = t.direction === 'SENT';
                   const isRefund = t.status === 'REFUND';
                   const isReversed = t.status === 'REVERSED';
                   return (
-                    <tr key={t.id} className="text-sm transition-colors hover:bg-slate-50/60">
+                    <tr key={t.id} className="text-sm transition-colors hover:bg-slate-50/60 dark:hover:bg-slate-800/50">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2.5">
                           <div
                             className={`flex h-7 w-7 items-center justify-center rounded-full ${
                               isRefund
-                                ? 'bg-slate-100 text-slate-600'
+                                ? 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
                                 : sent
-                                ? 'bg-rose-50 text-rose-600'
-                                : 'bg-emerald-50 text-emerald-600'
+                                ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400'
+                                : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400'
                             }`}
                           >
                             {isRefund ? (
@@ -168,16 +168,16 @@ export default function History() {
                               <ArrowDownLeft size={14} />
                             )}
                           </div>
-                          <span className="font-medium text-slate-700">
+                          <span className="font-medium text-slate-700 dark:text-slate-200">
                             {isRefund ? 'Refund' : sent ? 'Sent' : 'Received'}
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-slate-700">
+                      <td className="px-6 py-4 text-slate-700 dark:text-slate-200">
                         <p className="font-medium">
                           {sent ? t.recipientEmail : t.senderEmail}
                         </p>
-                        <p className="text-[11px] uppercase tracking-wider text-slate-400">
+                        <p className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500">
                           ID #{t.id}
                           {t.refundOfTransactionId
                             ? ` · refund of #${t.refundOfTransactionId}`
@@ -187,14 +187,14 @@ export default function History() {
                       <td className="px-6 py-4">
                         <StatusBadge status={t.status} />
                       </td>
-                      <td className="px-6 py-4 text-xs text-slate-500">{formatDate(t.createdAt)}</td>
+                      <td className="px-6 py-4 text-xs text-slate-500 dark:text-slate-400">{formatDate(t.createdAt)}</td>
                       <td
                         className={`tnum px-6 py-4 text-right font-semibold ${
                           isReversed
                             ? 'text-slate-400 line-through'
                             : sent
-                            ? 'text-rose-600'
-                            : 'text-emerald-600'
+                            ? 'text-rose-600 dark:text-rose-400'
+                            : 'text-emerald-600 dark:text-emerald-400'
                         }`}
                       >
                         {sent ? '−' : '+'}
@@ -204,13 +204,13 @@ export default function History() {
                         {t.refundable ? (
                           <button
                             onClick={() => setRefundTarget(t)}
-                            className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-[12px] font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-[12px] font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-700 dark:hover:text-white"
                           >
                             <Undo2 size={12} />
                             Refund
                           </button>
                         ) : (
-                          <span className="text-xs text-slate-300">—</span>
+                          <span className="text-xs text-slate-300 dark:text-slate-600">—</span>
                         )}
                       </td>
                     </tr>
@@ -223,7 +223,7 @@ export default function History() {
 
         {/* Pagination */}
         {data && data.totalPages > 1 && (
-          <div className="flex items-center justify-between border-t border-slate-100 px-6 py-4">
+          <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 px-6 py-4">
             <button
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={data.first}
@@ -232,7 +232,7 @@ export default function History() {
               <ChevronLeft size={16} />
               Previous
             </button>
-            <span className="text-sm text-slate-500">
+            <span className="text-sm text-slate-500 dark:text-slate-400">
               Page {data.number + 1} / {data.totalPages}
             </span>
             <button
@@ -268,11 +268,11 @@ export default function History() {
 
 function StatusBadge({ status }: { status: TransactionView['status'] }) {
   const map: Record<TransactionView['status'], string> = {
-    COMPLETED: 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/10',
-    PENDING:   'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/10',
-    FAILED:    'bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-600/10',
-    REVERSED:  'bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-600/10',
-    REFUND:    'bg-slate-900 text-white',
+    COMPLETED: 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/10 dark:bg-emerald-950/60 dark:text-emerald-400 dark:ring-emerald-500/20',
+    PENDING:   'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/10 dark:bg-amber-950/60 dark:text-amber-400 dark:ring-amber-500/20',
+    FAILED:    'bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-600/10 dark:bg-rose-950/60 dark:text-rose-400 dark:ring-rose-500/20',
+    REVERSED:  'bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-600/10 dark:bg-slate-800 dark:text-slate-400 dark:ring-slate-500/20',
+    REFUND:    'bg-slate-900 text-white dark:bg-brand-600 dark:text-white',
   };
   return <span className={`badge ${map[status]}`}>{status}</span>;
 }

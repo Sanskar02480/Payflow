@@ -134,14 +134,14 @@ export default function Dashboard() {
 
       {/* Recent activity */}
       <div className="mt-8 card overflow-hidden">
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 px-6 py-4">
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">Recent activity</h2>
-            <p className="mt-0.5 text-xs text-slate-500">Last 5 transactions</p>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Recent activity</h2>
+            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Last 5 transactions</p>
           </div>
           <Link
             to="/history"
-            className="text-xs font-medium text-slate-600 hover:text-slate-900"
+            className="text-xs font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
           >
             View all →
           </Link>
@@ -158,7 +158,7 @@ export default function Dashboard() {
             description="Your transfers will appear here once you send or receive money."
           />
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-slate-100 dark:divide-slate-800">
             {recent.map((t) => {
               const isRefund = t.status === 'REFUND';
               const sent = t.direction === 'SENT';
@@ -166,32 +166,32 @@ export default function Dashboard() {
               return (
                 <li
                   key={t.id}
-                  className="flex items-center gap-4 px-6 py-3.5 transition-colors hover:bg-slate-50/60"
+                  className="flex items-center gap-4 px-6 py-3.5 transition-colors hover:bg-slate-50/60 dark:hover:bg-slate-800/50"
                 >
                   <div
                     className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
                       isRefund
-                        ? 'bg-slate-100 text-slate-600'
+                        ? 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
                         : sent
-                        ? 'bg-rose-50 text-rose-600'
-                        : 'bg-emerald-50 text-emerald-600'
+                        ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400'
+                        : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400'
                     }`}
                   >
                     {sent ? <ArrowUpRight size={16} /> : <ArrowDownLeft size={16} />}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-slate-900">
+                    <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
                       {isRefund ? 'Refund' : sent ? 'Sent to' : 'Received from'}{' '}
-                      <span className="text-slate-600">{counterparty}</span>
+                      <span className="text-slate-600 dark:text-slate-400">{counterparty}</span>
                     </p>
-                    <p className="mt-0.5 text-[11px] uppercase tracking-wider text-slate-400">
+                    <p className="mt-0.5 text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500">
                       {relativeTime(t.createdAt)} · ID #{t.id}
                     </p>
                   </div>
                   <div className="text-right">
                     <p
                       className={`tnum text-sm font-semibold ${
-                        sent ? 'text-rose-600' : 'text-emerald-600'
+                        sent ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'
                       }`}
                     >
                       {sent ? '−' : '+'}
@@ -222,14 +222,14 @@ function StatCard({
   return (
     <div className="card p-4">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-medium text-slate-500">{label}</p>
+        <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</p>
         <Icon
           size={14}
           strokeWidth={2}
           className={tone === 'positive' ? 'text-emerald-500' : 'text-rose-500'}
         />
       </div>
-      <p className="tnum mt-2 text-lg font-semibold tracking-tight text-slate-900">
+      <p className="tnum mt-2 text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
         {formatCurrency(value)}
       </p>
     </div>

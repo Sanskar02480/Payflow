@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
@@ -46,9 +47,11 @@ export default {
         },
       },
       backgroundImage: {
-        // Faint dot grid used on auth pages instead of bright gradients
+        // Faint dot grid used on auth pages
         'dot-grid':
           'radial-gradient(circle, rgb(15 23 42 / 0.06) 1px, transparent 1px)',
+        'dot-grid-dark':
+          'radial-gradient(circle, rgb(255 255 255 / 0.08) 1px, transparent 1px)',
       },
       backgroundSize: {
         'dot-grid': '20px 20px',

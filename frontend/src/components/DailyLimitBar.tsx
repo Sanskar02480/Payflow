@@ -18,7 +18,7 @@ export default function DailyLimitBar({ refreshKey = 0, compact = false }: Props
 
   if (!data) {
     return (
-      <div className={compact ? 'h-2 w-full animate-pulse rounded-full bg-slate-100' : 'card animate-pulse p-5'}>
+      <div className={compact ? 'h-2 w-full animate-pulse rounded-full bg-slate-100 dark:bg-slate-800' : 'card animate-pulse p-5'}>
         {!compact && <div className="h-14" />}
       </div>
     );
@@ -34,21 +34,21 @@ export default function DailyLimitBar({ refreshKey = 0, compact = false }: Props
     ? 'bg-rose-500'
     : warn
     ? 'bg-amber-500'
-    : 'bg-slate-900';
+    : 'bg-slate-900 dark:bg-brand-500';
 
   if (compact) {
     return (
       <div>
         <div className="flex items-center justify-between text-xs">
-          <span className="text-slate-500">
-            <span className="tnum font-semibold text-slate-700">{formatCurrency(spent)}</span>
-            <span className="text-slate-400"> / {formatCurrency(limit)} today</span>
+          <span className="text-slate-500 dark:text-slate-400">
+            <span className="tnum font-semibold text-slate-700 dark:text-slate-200">{formatCurrency(spent)}</span>
+            <span className="text-slate-400 dark:text-slate-500"> / {formatCurrency(limit)} today</span>
           </span>
-          <span className={`tnum ${danger ? 'font-semibold text-rose-600' : 'text-slate-500'}`}>
+          <span className={`tnum ${danger ? 'font-semibold text-rose-600 dark:text-rose-400' : 'text-slate-500 dark:text-slate-400'}`}>
             {formatCurrency(data.remaining)} left
           </span>
         </div>
-        <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-slate-100">
+        <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
           <div
             className={`h-full ${barColor} transition-all duration-500`}
             style={{ width: `${pct}%` }}
@@ -61,24 +61,24 @@ export default function DailyLimitBar({ refreshKey = 0, compact = false }: Props
   return (
     <div className="card p-4">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-medium text-slate-500">Daily limit</p>
-        <span className="tnum text-[11px] font-medium uppercase tracking-wider text-slate-400">
+        <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Daily limit</p>
+        <span className="tnum text-[11px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
           {pct.toFixed(0)}% used
         </span>
       </div>
       <div className="mt-3 flex items-baseline justify-between">
-        <p className="tnum text-lg font-semibold tracking-tight text-slate-900">
+        <p className="tnum text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
           {formatCurrency(spent)}
         </p>
-        <p className="tnum text-xs text-slate-500">of {formatCurrency(limit)}</p>
+        <p className="tnum text-xs text-slate-500 dark:text-slate-400">of {formatCurrency(limit)}</p>
       </div>
-      <div className="mt-2.5 h-1 w-full overflow-hidden rounded-full bg-slate-100">
+      <div className="mt-2.5 h-1 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
         <div
           className={`h-full ${barColor} transition-all duration-500`}
           style={{ width: `${pct}%` }}
         />
       </div>
-      <p className="tnum mt-2 text-[11px] text-slate-500">
+      <p className="tnum mt-2 text-[11px] text-slate-500 dark:text-slate-400">
         {formatCurrency(data.remaining)} remaining · resets 00:00 UTC
       </p>
     </div>

@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, ArrowRight } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { extractErrorMessage } from '../api/client';
@@ -13,6 +13,7 @@ export default function Register() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const onSubmit = async (e: FormEvent) => {
@@ -32,10 +33,10 @@ export default function Register() {
   return (
     <AuthShell>
       <div>
-        <h1 className="text-xl font-semibold tracking-tight text-slate-900">
+        <h1 className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white">
           Create an account
         </h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           A wallet is created automatically with your account.
         </p>
       </div>
@@ -74,15 +75,24 @@ export default function Register() {
             />
             <input
               id="password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               required
               autoComplete="new-password"
               minLength={8}
-              className="input pl-9"
+              className="input pl-9 pr-10"
               placeholder="At least 8 characters"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none transition-colors dark:text-slate-500 dark:hover:text-slate-300"
+              tabIndex={-1}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+            </button>
           </div>
         </div>
 
@@ -91,10 +101,10 @@ export default function Register() {
         </button>
       </form>
 
-      <div className="mt-6 border-t border-slate-100 pt-5 text-center">
-        <p className="text-sm text-slate-500">
+      <div className="mt-6 border-t border-slate-100 dark:border-slate-800 pt-5 text-center">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           Already have an account?{' '}
-          <Link to="/login" className="font-medium text-slate-900 hover:underline">
+          <Link to="/login" className="font-medium text-slate-900 hover:underline dark:text-white">
             Sign in
           </Link>
         </p>
