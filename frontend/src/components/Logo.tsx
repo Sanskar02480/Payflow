@@ -14,7 +14,7 @@ export default function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
         {/* tiny brand accent dot */}
         <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-brand-500 ring-2 ring-white" />
       </div>
-      <span className={`${text} font-semibold tracking-tight text-slate-900`}>PayFlow</span>
+      <span className={`${text} font-semibold tracking-tight text-slate-900 dark:text-white`}>PayFlow</span>
     </div>
   );
 }

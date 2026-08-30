@@ -72,15 +72,15 @@ export default function Transfer() {
         <div className="card p-6 lg:col-span-2">
           {/* Current-balance + daily-limit strip */}
           <div className="mb-6 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border border-slate-100 bg-slate-50/60 px-4 py-3">
-              <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
+            <div className="rounded-lg border border-slate-100 bg-slate-50/60 dark:border-slate-800 dark:bg-slate-800/50 px-4 py-3">
+              <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Available balance
               </p>
-              <p className="tnum mt-1 text-lg font-semibold tracking-tight text-slate-900">
+              <p className="tnum mt-1 text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
                 {wallet ? formatCurrency(wallet.balance) : '—'}
               </p>
             </div>
-            <div className="rounded-lg border border-slate-100 bg-slate-50/60 px-4 py-3">
+            <div className="rounded-lg border border-slate-100 bg-slate-50/60 dark:border-slate-800 dark:bg-slate-800/50 px-4 py-3">
               <DailyLimitBar compact />
             </div>
           </div>
@@ -137,7 +137,7 @@ export default function Transfer() {
                 <input
                   id="idem"
                   readOnly
-                  className="input flex-1 cursor-not-allowed bg-slate-50/70 font-mono text-[11px] text-slate-600"
+                  className="input flex-1 cursor-not-allowed bg-slate-50/70 dark:bg-slate-800/70 dark:border-slate-800 font-mono text-[11px] text-slate-600 dark:text-slate-300"
                   value={idempotencyKey}
                 />
                 <button
@@ -150,7 +150,7 @@ export default function Transfer() {
                   <RefreshCw size={14} />
                 </button>
               </div>
-              <p className="mt-1.5 text-[11px] text-slate-500">
+              <p className="mt-1.5 text-[11px] text-slate-500 dark:text-slate-400">
                 Submitting twice with the same key returns the same response — no double charge.
               </p>
             </div>
@@ -181,35 +181,35 @@ export default function Transfer() {
 
         <aside className="card p-5">
           <div className="flex items-center gap-2">
-            <ShieldCheck size={15} className="text-emerald-600" strokeWidth={2} />
-            <p className="text-sm font-semibold text-slate-900">What protects this transfer</p>
+            <ShieldCheck size={15} className="text-emerald-600 dark:text-emerald-400" strokeWidth={2} />
+            <p className="text-sm font-semibold text-slate-900 dark:text-white">What protects this transfer</p>
           </div>
-          <ul className="mt-4 space-y-3 text-sm text-slate-600">
+          <ul className="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
             <li className="flex items-start gap-2.5">
-              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-slate-400" />
+              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-slate-400 dark:bg-slate-600" />
               <span>
-                <span className="font-medium text-slate-800">ACID transaction</span> — debit
+                <span className="font-medium text-slate-800 dark:text-slate-100">ACID transaction</span> — debit
                 and credit happen as one step or not at all.
               </span>
             </li>
             <li className="flex items-start gap-2.5">
-              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-slate-400" />
+              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-slate-400 dark:bg-slate-600" />
               <span>
-                <span className="font-medium text-slate-800">Idempotency key</span> — retries
+                <span className="font-medium text-slate-800 dark:text-slate-100">Idempotency key</span> — retries
                 return the same response, never re-process.
               </span>
             </li>
             <li className="flex items-start gap-2.5">
-              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-slate-400" />
+              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-slate-400 dark:bg-slate-600" />
               <span>
-                <span className="font-medium text-slate-800">Row locks + @Version</span> — no
+                <span className="font-medium text-slate-800 dark:text-slate-100">Row locks + @Version</span> — no
                 lost updates under concurrency.
               </span>
             </li>
             <li className="flex items-start gap-2.5">
-              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-slate-400" />
+              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-slate-400 dark:bg-slate-600" />
               <span>
-                <span className="font-medium text-slate-800">Rate limited</span> — 10 transfers
+                <span className="font-medium text-slate-800 dark:text-slate-100">Rate limited</span> — 10 transfers
                 per minute, ₹50,000 daily cap.
               </span>
             </li>

@@ -28,23 +28,23 @@ export default function ForgotPassword() {
     <AuthShell>
       {submitted ? (
         <div className="text-center">
-          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
             <CheckCircle2 size={18} />
           </div>
-          <h1 className="mt-4 text-xl font-semibold tracking-tight text-slate-900">
+          <h1 className="mt-4 text-xl font-semibold tracking-tight text-slate-900 dark:text-white">
             Check your inbox
           </h1>
-          <p className="mt-1.5 text-sm text-slate-500">
-            If an account exists with <span className="font-medium text-slate-700">{email}</span>,
+          <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400">
+            If an account exists with <span className="font-medium text-slate-700 dark:text-slate-200">{email}</span>,
             a reset link has been sent. It expires in 15 minutes.
           </p>
 
-          <div className="mt-5 rounded-md border border-amber-200/70 bg-amber-50/70 p-3.5 text-left">
-            <div className="flex items-center gap-1.5 text-amber-800">
+          <div className="mt-5 rounded-md border border-amber-200/70 bg-amber-50/70 dark:border-amber-900/50 dark:bg-amber-950/40 p-3.5 text-left">
+            <div className="flex items-center gap-1.5 text-amber-800 dark:text-amber-300">
               <Terminal size={13} />
               <p className="text-[10px] font-semibold uppercase tracking-wider">Demo mode</p>
             </div>
-            <p className="mt-1 text-xs text-amber-800/90">
+            <p className="mt-1 text-xs text-amber-800/90 dark:text-amber-300/90">
               Email delivery isn't wired up. The reset link was printed in the backend terminal —
               copy the URL from there to continue.
             </p>
@@ -52,7 +52,7 @@ export default function ForgotPassword() {
 
           <Link
             to="/login"
-            className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900"
+            className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
           >
             <ArrowLeft size={13} />
             Back to sign in
@@ -61,10 +61,10 @@ export default function ForgotPassword() {
       ) : (
         <>
           <div>
-            <h1 className="text-xl font-semibold tracking-tight text-slate-900">
+            <h1 className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white">
               Reset password
             </h1>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
               Enter your email and we'll send a link to set a new one.
             </p>
           </div>
@@ -98,7 +98,7 @@ export default function ForgotPassword() {
 
             <Link
               to="/login"
-              className="flex items-center justify-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-900"
+              className="flex items-center justify-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             >
               <ArrowLeft size={13} />
               Back to sign in

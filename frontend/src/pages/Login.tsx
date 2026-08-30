@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Mail, Lock, ArrowRight } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { extractErrorMessage } from '../api/client';
@@ -15,6 +15,7 @@ export default function Login() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -43,8 +44,8 @@ export default function Login() {
       }
     >
       <div>
-        <h1 className="text-xl font-semibold tracking-tight text-slate-900">Sign in</h1>
-        <p className="mt-1 text-sm text-slate-500">Welcome back to your wallet.</p>
+        <h1 className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white">Sign in</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Welcome back to your wallet.</p>
       </div>
 
       <form onSubmit={onSubmit} className="mt-6 space-y-4">
@@ -77,7 +78,7 @@ export default function Login() {
             </label>
             <Link
               to="/forgot-password"
-              className="text-[11px] font-medium uppercase tracking-wider text-slate-500 hover:text-slate-900"
+              className="text-[11px] font-medium uppercase tracking-wider text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             >
               Forgot?
             </Link>
@@ -89,32 +90,41 @@ export default function Login() {
             />
             <input
               id="password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               required
               autoComplete="current-password"
               minLength={8}
-              className="input pl-9"
+              className="input pl-9 pr-10"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none transition-colors dark:text-slate-500 dark:hover:text-slate-300"
+              tabIndex={-1}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+            </button>
           </div>
         </div>
 
         <label
           htmlFor="remember"
-          className="flex cursor-pointer select-none items-center gap-2 text-sm text-slate-700"
+          className="flex cursor-pointer select-none items-center gap-2 text-sm text-slate-700 dark:text-slate-300"
         >
           <input
             id="remember"
             type="checkbox"
-            className="h-3.5 w-3.5 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+            className="h-3.5 w-3.5 rounded border-slate-300 dark:border-slate-700 text-slate-900 dark:bg-slate-800 focus:ring-slate-900"
             checked={rememberMe}
             onChange={(e) => setRememberMe(e.target.checked)}
           />
           <span>
             Remember me{' '}
-            <span className="text-xs text-slate-400">(keep signed in for 24h)</span>
+            <span className="text-xs text-slate-400 dark:text-slate-500">(keep signed in for 24h)</span>
           </span>
         </label>
 
@@ -123,10 +133,10 @@ export default function Login() {
         </button>
       </form>
 
-      <div className="mt-6 border-t border-slate-100 pt-5 text-center">
-        <p className="text-sm text-slate-500">
+      <div className="mt-6 border-t border-slate-100 dark:border-slate-800 pt-5 text-center">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           New to PayFlow?{' '}
-          <Link to="/register" className="font-medium text-slate-900 hover:underline">
+          <Link to="/register" className="font-medium text-slate-900 hover:underline dark:text-white">
             Create an account
           </Link>
         </p>
