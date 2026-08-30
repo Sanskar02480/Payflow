@@ -62,9 +62,39 @@ services:
     networks:
       - payflow-net
 
+  # --- PayFlow Application ---
+  # Build from Dockerfile or pull from Docker Hub:
+  #   Local build:  docker compose up --build app
+  #   From Hub:     Change "build: ." to "image: <your-dockerhub-user>/payflow:latest"
+  app:
+    build: .
+    container_name: payflow-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB:-payflow}
+      DB_USER: ${POSTGRES_USER:-payflow}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP: kafka:29092
+    networks:
+      - payflow-net
+
 volumes:
   postgres_data:
 
 networks:
   payflow-net:
     driver: bridge
+

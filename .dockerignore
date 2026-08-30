@@ -1,0 +1,34 @@
+# Dependencies & build artifacts (don't send to Docker)
+target/
+frontend/node_modules/
+frontend/dist/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Git
+.git/
+.gitignore
+
+# Environment & secrets
+.env
+.env.local
+*.pem
+*.key
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes
+postgres_data/
+
+# Docs (not needed in image)
+*.md
+DECISIONS.md
+README.md
+
+# CI/CD config (not needed in image)
+.github/
